@@ -33,7 +33,7 @@ public class ProductController {
     @PutMapping("/reduce/{id}/{quantity}")
     public ResponseEntity<String> reduceStock(@PathVariable Integer id,@PathVariable Integer quantity){
         productService.reduceStock(id,quantity);
-        return  ResponseEntity.ok("Stock reduced ssuccessfully");
+        return  ResponseEntity.ok("Stock reduced successfully");
 
     }
 }
