@@ -36,7 +36,7 @@ public class OrderService {
         return "Order Placed Successfully";
     }
 
-    public String placeOrder(Integer productId, int quantity) {
+    public String placeOrder(Integer productId, Integer quantity) {
 
         ProductEntity product = productClient.getProductById(productId);
 

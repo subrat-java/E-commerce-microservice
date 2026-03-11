@@ -26,7 +26,7 @@ public class OrderController {
     }
 
     @PostMapping("/place")
-    public ResponseEntity<String> placeOrder(@RequestParam Integer productId, @RequestParam int quantity) {
+    public ResponseEntity<String> placeOrder(@RequestParam Integer productId, @RequestParam Integer quantity) {
         return ResponseEntity.ok(orderService.placeOrder(productId, quantity));
 
     }

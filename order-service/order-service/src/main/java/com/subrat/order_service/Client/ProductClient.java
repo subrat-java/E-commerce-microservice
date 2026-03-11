@@ -12,7 +12,7 @@ public interface ProductClient {
     @GetMapping("/product/{id}")
     ProductEntity getProductById(@PathVariable Integer id);
 
-    @PutMapping("/product/reduce/{id}/{quantity}")
-    void reduceStock(@PathVariable Integer id, @PathVariable Integer quantity);
+    @PutMapping("product/reduce/{id}/{quantity}")
+    void reduceStock(@PathVariable("id") Integer id, @PathVariable("quantity") Integer quantity);
 
 }
