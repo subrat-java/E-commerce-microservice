@@ -30,10 +30,10 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
-    @PutMapping("/product/reduce/{id}/{quantity}")
-    public ResponseEntity<String> reduceStock(@PathVariable Integer id,int quantity){
+    @PutMapping("/reduce/{id}/{quantity}")
+    public ResponseEntity<String> reduceStock(@PathVariable Integer id,@PathVariable Integer quantity){
         productService.reduceStock(id,quantity);
-        return  ResponseEntity.ok("Stock reduced duccessfully");
+        return  ResponseEntity.ok("Stock reduced ssuccessfully");
 
     }
 }
