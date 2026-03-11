@@ -4,6 +4,7 @@ import com.subrat.Product_Service.Entity.ProductEntity;
 import com.subrat.order_service.Client.ProductClient;
 import com.subrat.order_service.Entity.OrderEntity;
 import com.subrat.order_service.Entity.Repository.OrderRepository;
+import com.subrat.order_service.Exception.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,28 +40,25 @@ public class OrderService {
 
         ProductEntity product = productClient.getProductById(productId);
 
-        if (product.getStock() < quantity){
-            return "Not enough stock available";
+        if(product == null){
+            throw new ProductNotFoundException("Product not found");
         }
+
+        if (product.getStock() < quantity){
+            throw new RuntimeException("Not enough stock available");
+        }
+
+        productClient.reduceStock(productId, quantity);
+
         OrderEntity order = new OrderEntity();
         order.setProductId(productId);
         order.setQuantity(quantity);
 
-        double totalPrice = product.getPrice()*quantity;
+        double totalPrice = product.getPrice() * quantity;
         order.setTotalPrice(totalPrice);
 
         orderRepository.save(order);
 
-        return "Order Place successfully";
-    }
-
-    public OrderEntity placeOrder(OrderEntity order){
-        ProductEntity product = productClient.getProductById(order.getProductId());
-
-        if (product.getStock() < order.getQuantity()){
-            throw  new RuntimeException("not enough of stock");
-        }
-         productClient.reduceStock(order.getProductId(),order.getQuantity());
-        return orderRepository.save(order);
+        return "Order placed successfully";
     }
 }
