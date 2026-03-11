@@ -21,4 +21,20 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+
+    public ProductEntity getProductById(Integer id) {
+        return productRepository.findById(id).orElseThrow(()-> new RuntimeException("product not found"));
+    }
+
+    public void reduceStock(Integer id, int quantity) {
+        ProductEntity product = productRepository.findById(id).orElseThrow(()-> new RuntimeException("product not found"));
+
+        if (product.getStock() < quantity){
+            throw new RuntimeException("not Enough stock");
+        }
+        product.setStock(product.getStock() -  quantity);
+
+        productRepository.save(product);
+
+    }
 }
