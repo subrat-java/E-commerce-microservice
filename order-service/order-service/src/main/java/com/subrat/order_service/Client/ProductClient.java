@@ -13,6 +13,6 @@ public interface ProductClient {
     ProductEntity getProductById(@PathVariable Integer id);
 
     @PutMapping("/product/reduce/{id}/{quantity}")
-    String reduceStock(@PathVariable Integer id, @PathVariable Integer quantity);
+    void reduceStock(@PathVariable Integer id, @PathVariable Integer quantity);
 
 }
