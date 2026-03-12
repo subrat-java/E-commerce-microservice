@@ -1,4 +1,4 @@
-package com.subrat.order_service.Entity.Repository;
+package com.subrat.order_service.Repository;
 
 import com.subrat.order_service.Entity.OrderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
