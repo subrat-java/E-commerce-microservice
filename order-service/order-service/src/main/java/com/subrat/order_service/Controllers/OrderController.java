@@ -1,5 +1,7 @@
 package com.subrat.order_service.Controllers;
 
+import com.subrat.order_service.Dto.OrderRequestDTO;
+import com.subrat.order_service.Dto.OrderResponseDTO;
 import com.subrat.order_service.Entity.OrderEntity;
 import com.subrat.order_service.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +28,13 @@ public class OrderController {
     }
 
     @PostMapping("/place")
-    public ResponseEntity<String> placeOrder(@RequestParam Integer productId, @RequestParam Integer quantity) {
-        return ResponseEntity.ok(orderService.placeOrder(productId, quantity));
+    public ResponseEntity<OrderResponseDTO> placeOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
+
+                 System.out.println(orderRequestDTO.getProductId());
+                 System.out.println(orderRequestDTO.getQuantity());
+
+            OrderResponseDTO responseDTO = orderService.placeOrder(orderRequestDTO);
+        return ResponseEntity.ok(responseDTO);
 
     }
 }

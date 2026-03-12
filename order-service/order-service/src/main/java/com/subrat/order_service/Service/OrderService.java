@@ -2,9 +2,13 @@ package com.subrat.order_service.Service;
 
 import com.subrat.Product_Service.Entity.ProductEntity;
 import com.subrat.order_service.Client.ProductClient;
+import com.subrat.order_service.Dto.OrderRequestDTO;
+import com.subrat.order_service.Dto.OrderResponseDTO;
 import com.subrat.order_service.Entity.OrderEntity;
-import com.subrat.order_service.Entity.Repository.OrderRepository;
+import com.subrat.order_service.Repository.OrderRepository;
 import com.subrat.order_service.Exception.ProductNotFoundException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +21,9 @@ public class OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private ProductClient productClient;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     public OrderEntity create(OrderEntity orderEntity){
         return orderRepository.save(orderEntity);
@@ -36,29 +43,50 @@ public class OrderService {
         return "Order Placed Successfully";
     }
 
-    public String placeOrder(Integer productId, Integer quantity) {
+    @CircuitBreaker(name = "PRODUCT-SERVICE", fallbackMethod = "productFallback")
+    public OrderResponseDTO placeOrder(OrderRequestDTO request) {
 
-        ProductEntity product = productClient.getProductById(productId);
+        ProductEntity product = productClient.getProductById(request.getProductId());
 
         if(product == null){
             throw new ProductNotFoundException("Product not found");
         }
 
-        if (product.getStock() < quantity){
+        if (product.getStock() < request.getQuantity()){
             throw new RuntimeException("Not enough stock available");
         }
 
-        productClient.reduceStock(productId, quantity);
+        productClient.reduceStock(request.getProductId(),request.getQuantity());
 
-        OrderEntity order = new OrderEntity();
-        order.setProductId(productId);
-        order.setQuantity(quantity);
+        //This is before ModelMapper implementation
 
-        double totalPrice = product.getPrice() * quantity;
+//        OrderEntity order = new OrderEntity();
+//        order.setProductId(request.getProductId());
+//        order.setQuantity(request.getQuantity());
+//
+
+//        order.setTotalPrice(totalPrice);
+
+//      OrderResponseDTO responseDTO = new OrderResponseDTO();
+//      responseDTO.setUserId(savedOrder.getUserId());
+//      responseDTO.setQuantity(order.getQuantity());
+//      responseDTO.setProductId(order.getProductId());
+//      responseDTO.setTotalPrice(order.getTotalPrice());
+
+        OrderEntity order = modelMapper.map(request,OrderEntity.class);
+        double totalPrice = product.getPrice() * request.getQuantity();
         order.setTotalPrice(totalPrice);
+        OrderEntity savedOrder = orderRepository.save(order);
+        return modelMapper.map(savedOrder,OrderResponseDTO.class);
 
-        orderRepository.save(order);
 
-        return "Order placed successfully";
     }
+
+    public OrderResponseDTO productFallback(OrderRequestDTO requestDTO,Exception ex){
+        OrderResponseDTO responseDTO = modelMapper.map(requestDTO,OrderResponseDTO.class);
+        responseDTO.setTotalPrice(0.0);
+        return responseDTO;
+    }
+
+
 }
