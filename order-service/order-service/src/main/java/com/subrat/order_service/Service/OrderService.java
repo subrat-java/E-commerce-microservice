@@ -1,9 +1,10 @@
 package com.subrat.order_service.Service;
 
-import com.subrat.Product_Service.Entity.ProductEntity;
+
 import com.subrat.order_service.Client.ProductClient;
 import com.subrat.order_service.Dto.OrderRequestDTO;
 import com.subrat.order_service.Dto.OrderResponseDTO;
+import com.subrat.order_service.Dto.ProductDto;
 import com.subrat.order_service.Entity.OrderEntity;
 import com.subrat.order_service.Repository.OrderRepository;
 import com.subrat.order_service.Exception.ProductNotFoundException;
@@ -34,7 +35,7 @@ public class OrderService {
     }
 
     public String createOrder(Integer id){
-        ProductEntity product = productClient.getProductById(id);
+        ProductDto product = productClient.getProductById(id);
 
         if(product.getStock() <= 0){
             return "Product Out Of Stock";
@@ -46,7 +47,7 @@ public class OrderService {
     @CircuitBreaker(name = "PRODUCT-SERVICE", fallbackMethod = "productFallback")
     public OrderResponseDTO placeOrder(OrderRequestDTO request) {
 
-        ProductEntity product = productClient.getProductById(request.getProductId());
+        ProductDto product = productClient.getProductById(request.getProductId());
 
         if(product == null){
             throw new ProductNotFoundException("Product not found");
