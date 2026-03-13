@@ -3,6 +3,7 @@ package com.subrat.user_service.Service;
 import com.subrat.user_service.Emtity.UserEntity;
 import com.subrat.user_service.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.parser.Entity;
@@ -11,14 +12,24 @@ import java.util.List;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserEntity create(UserEntity userEntity){
-        return userRepository.save(userEntity);
+    // Constructor Injection
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public List<UserEntity> getAll(){
-        return  userRepository.findAll();
+    // Register new user (password will be encrypted before saving)
+    public UserEntity createUser(UserEntity user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
+
+    // Get all users
+    public List<UserEntity> getAll() {
+        return userRepository.findAll();
+    }
+
 }
