@@ -18,14 +18,19 @@ public class UserController {
     private UserService userService;
 
 
-    @PostMapping
-    public ResponseEntity<UserEntity> create(@RequestBody UserEntity userEntity){
-        return ResponseEntity.ok(userService.create(userEntity));
-    }
+//    @PostMapping
+//    public ResponseEntity<UserEntity> create(@RequestBody UserEntity userEntity){
+//        return ResponseEntity.ok(userService.create(userEntity));
+//    }
 
 
     @GetMapping
     public ResponseEntity<List<UserEntity>> getAll(){
         return ResponseEntity.ok(userService.getAll());
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserEntity> createUser(@RequestBody UserEntity userEntity){
+        return ResponseEntity.ok(userService.createUser(userEntity));
     }
 }
